@@ -8,7 +8,7 @@ export function formatHMS(totalSeconds: number): string {
   return `${h}:${m}:${sec}`;
 }
 
-export function playSound(ref: RefObject<HTMLAudioElement>): void {
+export function playSound(ref: RefObject<HTMLAudioElement | null>): void {
   if (!ref.current) return;
   ref.current.currentTime = 0;
   ref.current.play().catch(() => {});

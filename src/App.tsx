@@ -32,15 +32,15 @@ export default function EscapeRoomTimer() {
       className={`w-full min-h-screen bg-black flex items-center justify-center p-4 ${backdrop}`}
     >
       <div className="w-full max-w-4xl px-6 py-8">
-        <audio ref={audio.musicRef} src="/audio/escape-room-music.mp3" />
-        <audio ref={audio.okRef} src="/audio/correct.wav" />
-        <audio ref={audio.errRef} src="/audio/error.wav" />
-        <audio ref={audio.winRef} src="/audio/win.mp3" />
+        <audio ref={audio.musicRef} src="audio/escape-room-music.mp3" />
+        <audio ref={audio.okRef} src="audio/correct.wav" />
+        <audio ref={audio.errRef} src="audio/error.wav" />
+        <audio ref={audio.winRef} src="audio/win.mp3" />
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-              DekaBank Escape Room
+              Escape Room Timer
             </h1>
             <p className="text-gray-400 text-sm md:text-base mt-1">
               Löse alle Buchstabenpaare bevor die Zeit abläuft!

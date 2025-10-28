@@ -7,8 +7,8 @@ interface PuzzleCardProps {
   isActive: boolean;
   inputs: [string, string];
   onInputChange: (idx: number, val: string) => void;
-  input0Ref: RefObject<HTMLInputElement> | null;
-  input1Ref: RefObject<HTMLInputElement> | null;
+  input0Ref: RefObject<HTMLInputElement | null> | null;
+  input1Ref: RefObject<HTMLInputElement | null> | null;
 }
 
 export default function PuzzleCard({ 

@@ -8,8 +8,8 @@ interface PuzzleGridProps {
   finished: boolean;
   running: boolean;
   onInputChange: (idx: number, val: string) => void;
-  input0Ref: RefObject<HTMLInputElement>;
-  input1Ref: RefObject<HTMLInputElement>;
+  input0Ref: RefObject<HTMLInputElement | null>;
+  input1Ref: RefObject<HTMLInputElement | null>;
 }
 
 export default function PuzzleGrid({ 

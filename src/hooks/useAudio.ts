@@ -2,11 +2,11 @@ import { useRef, RefObject } from 'react';
 import { playSound } from '../utils/formatters';
 
 export interface UseAudioReturn {
-  musicRef: RefObject<HTMLAudioElement>;
-  okRef: RefObject<HTMLAudioElement>;
-  errRef: RefObject<HTMLAudioElement>;
-  winRef: RefObject<HTMLAudioElement>;
-  playSound: (ref: RefObject<HTMLAudioElement>) => void;
+  musicRef: RefObject<HTMLAudioElement | null>;
+  okRef: RefObject<HTMLAudioElement | null>;   
+  errRef: RefObject<HTMLAudioElement | null>;  
+  winRef: RefObject<HTMLAudioElement | null>;  
+  playSound: (ref: RefObject<HTMLAudioElement | null>) => void; 
 }
 
 export function useAudio(): UseAudioReturn {

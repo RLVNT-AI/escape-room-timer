@@ -10,8 +10,8 @@ interface UsePuzzleReturn {
   flash: FlashState;
   finished: boolean;
   penalty: boolean;
-  input0Ref: RefObject<HTMLInputElement>;
-  input1Ref: RefObject<HTMLInputElement>;
+  input0Ref: RefObject<HTMLInputElement | null>;
+  input1Ref: RefObject<HTMLInputElement | null>;
   handleInput: (idx: number, val: string) => void;
   focusActiveInput: () => void;
   check: () => void;
