@@ -5,15 +5,15 @@ import { UseAudioReturn } from './useAudio';
 type FlashState = "" | "success" | "error";
 
 interface UsePuzzleReturn {
-  activePair: number;
-  inputs: [string, string];
+  pairInputs: Array<[string, string]>;
+  pairsDone: boolean[];
   flash: FlashState;
   finished: boolean;
   penalty: boolean;
   input0Ref: RefObject<HTMLInputElement | null>;
   input1Ref: RefObject<HTMLInputElement | null>;
-  handleInput: (idx: number, val: string) => void;
-  focusActiveInput: () => void;
+  handleInput: (pairIdx: number, inputIdx: number, val: string) => void;  
+  focusFirstInput: () => void;
   check: () => void;
   canCheck: boolean;
   reset: () => void;
@@ -23,8 +23,13 @@ export function usePuzzle(
   audioRefs: UseAudioReturn,
   setTimeLeft: (value: number | ((prev: number) => number)) => void
 ): UsePuzzleReturn {
-  const [activePair, setActivePair] = useState<number>(0);
-  const [inputs, setInputs] = useState<[string, string]>(["", ""]);
+
+  const [pairInputs, setPairInputs] = useState<Array<[string, string]>>(
+    Array(TARGET_PAIRS.length).fill(null).map(() => ['', ''])
+  );
+  const [pairsDone, setPairsDone] = useState<boolean[]>(
+    Array(TARGET_PAIRS.length).fill(false)
+  );
   const [flash, setFlash] = useState<FlashState>("");
   const [penalty, setPenalty] = useState<boolean>(false);
   const [finished, setFinished] = useState<boolean>(false);
@@ -32,98 +37,124 @@ export function usePuzzle(
   const input0Ref = useRef<HTMLInputElement>(null);
   const input1Ref = useRef<HTMLInputElement>(null);
 
-  // Flash reset
+  // ═══════════════════════════════════════════════════════════
+  // EFFECTS: Flash & Penalty Animation Reset
+  // ═══════════════════════════════════════════════════════════
   useEffect(() => {
     if (!flash) return;
     const t = setTimeout(() => setFlash(""), FLASH_DURATION);
     return () => clearTimeout(t);
   }, [flash]);
 
-  // Penalty animation reset
   useEffect(() => {
     if (!penalty) return;
     const t = setTimeout(() => setPenalty(false), 1000);
     return () => clearTimeout(t);
   }, [penalty]);
 
-  const handleInput = (idx: number, val: string): void => {
+
+  // ═══════════════════════════════════════════════════════════
+  // INPUT HANDLING: Update specific pair + input
+  // ═══════════════════════════════════════════════════════════
+  const handleInput = (pairIdx: number, inputIdx: number, val: string): void => {
+    if (finished) return;
+    
     const v = (val || "").slice(-1).toUpperCase().replace(/[^A-Z]/g, "");
-    setInputs((old) => {
-      const next: [string, string] = [...old] as [string, string];
-      next[idx] = v;
-      return next;
+    
+    setPairInputs((prev) => {
+      const updated = prev.map((pair, i) => 
+        i === pairIdx 
+          ? pair.map((char, j) => j === inputIdx ? v : char) as [string, string]
+          : pair
+      );
+      return updated;
     });
   };
 
-  const focusActiveInput = useCallback(() => {
+  // ═══════════════════════════════════════════════════════════
+  // FOCUS: Jump to first input after reset
+  // ═══════════════════════════════════════════════════════════
+  const focusFirstInput = useCallback(() => {
     if (finished) return;
-    
     setTimeout(() => {
-      const val0 = input0Ref.current?.value || '';
-      const val1 = input1Ref.current?.value || '';
-      
-      if (val0 === '') {
-        input0Ref.current?.focus();
-      } 
-      else if (val1 === '') {
-        input1Ref.current?.focus();
-      }
-      else {
-        input1Ref.current?.focus();
-      }
-    }, 0);
+      input0Ref.current?.focus();
+    }, 100);
   }, [finished]);
 
 
-  const check = (): void => {
+  // ═══════════════════════════════════════════════════════════
+  // CHECK: Check all 4 pairs at once
+  // ═══════════════════════════════════════════════════════════
+ const check = (): void => {
     if (finished) return;
+
+    let hasError = false;
+    const newDone = [...pairsDone];
     
-    const [a, b] = inputs.map((x) => x.trim().toUpperCase());
-    const [ta, tb] = TARGET_PAIRS[activePair];
-    const correct = a === ta && b === tb;
-
-    if (correct) {
-      setFlash("success");
-      audioRefs.playSound(audioRefs.okRef);
-
-      if (activePair === TARGET_PAIRS.length - 1) {
-        setFinished(true);
-        setTimeout(() => audioRefs.playSound(audioRefs.winRef), WIN_SOUND_DELAY);
-      } else {
-        setActivePair((p) => p + 1);
-        setInputs(["", ""]);
-        setTimeout(() => focusActiveInput(), 100);
+    TARGET_PAIRS.forEach((targetPair, idx) => {
+      const [userA, userB] = pairInputs[idx].map(x => x.trim().toUpperCase());
+      const [targetA, targetB] = targetPair;
+      
+      // Only check pairs that have BOTH inputs filled AND are not done yet
+      if (userA && userB && !pairsDone[idx]) {
+        if (userA === targetA && userB === targetB) {
+          newDone[idx] = true;
+        } else {
+          hasError = true;
+        }
       }
-    } else {
+    });
+    
+    if (hasError) {
       setFlash("error");
       setPenalty(true);
       audioRefs.playSound(audioRefs.errRef);
       setTimeLeft((t) => Math.max(0, t - TIME_PENALTY));
-      setInputs(["", ""]);
-      setTimeout(() => focusActiveInput(), 100);
+      setPairInputs(Array(TARGET_PAIRS.length).fill(null).map(() => ['', '']));
+      setPairsDone(Array(TARGET_PAIRS.length).fill(false));
+      focusFirstInput();
+    } else if (newDone.every(x => x)) {
+      setPairsDone(newDone);
+      setFlash("success");
+      setFinished(true);
+      audioRefs.playSound(audioRefs.okRef);
+      setTimeout(() => audioRefs.playSound(audioRefs.winRef), WIN_SOUND_DELAY);
+    } else {
+      setPairsDone(newDone);
+      if (newDone.some((done, idx) => done && !pairsDone[idx])) {
+        audioRefs.playSound(audioRefs.okRef);
+      }
     }
   };
 
+  // ═══════════════════════════════════════════════════════════
+  // RESET: Reset entire game (except for timer)
+  // ═══════════════════════════════════════════════════════════
   const reset = (): void => {
     setFinished(false);
-    setActivePair(0);
-    setInputs(["", ""]);
+    setPairInputs(Array(TARGET_PAIRS.length).fill(null).map(() => ['', '']));
+    setPairsDone(Array(TARGET_PAIRS.length).fill(false));
     setFlash("");
     setPenalty(false);
   };
 
-  const canCheck = inputs[0].length === 1 && inputs[1].length === 1 && !finished;
+  // ═══════════════════════════════════════════════════════════
+  // CAN CHECK: Enter at least one letter
+  // ═══════════════════════════════════════════════════════════
+  const canCheck = !finished && pairInputs.some(pair => 
+    pair[0].length > 0 || pair[1].length > 0
+  );
 
   return {
-    activePair,
-    inputs,
+    pairInputs,
+    pairsDone,
     flash,
     finished,
     penalty,
     input0Ref,
     input1Ref,
     handleInput,
-    focusActiveInput,
+    focusFirstInput,
     check,
     canCheck,
     reset

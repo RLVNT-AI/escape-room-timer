@@ -20,7 +20,7 @@ export default function ControlButtons({
 
   const getStartPauseText = (): string => {
       if (!hasStarted) return "Start";
-      return running ? "Pause" : "Resume";
+      return running ? "Pause" : "Fortsetzen";
     };
 
 
@@ -47,7 +47,7 @@ export default function ControlButtons({
         disabled={!canCheck || !running}
         aria-label="Eingabe prüfen"
       >
-        Check
+        Prüfen
       </button>
 
       <button
@@ -55,7 +55,7 @@ export default function ControlButtons({
         className="px-5 py-3 rounded-full border border-white/20 text-white/80 hover:bg-white/10 transition"
         aria-label="Spiel zurücksetzen"
       >
-        Reset
+        Zurücksetzen
       </button>
     </div>
   );

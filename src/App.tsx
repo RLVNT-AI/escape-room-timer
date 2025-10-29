@@ -58,7 +58,9 @@ export default function EscapeRoomTimer() {
                   : "bg-white/5 text-white/70")
               }
             >
-              {puzzle.finished ? "Finished" : timer.running ? "Running…" : "Paused"}
+              {puzzle.finished ? "Finished" : 
+              timer.hasStarted ? timer.running ? "Die Zeit läuft..." : "Pausiert" 
+              : "Warte auf Start..."}
             </span>
           </div>
         </div>
@@ -66,8 +68,8 @@ export default function EscapeRoomTimer() {
         <TimerDisplay timeLeft={timer.timeLeft} penalty={puzzle.penalty} />
 
         <PuzzleGrid
-          activePair={puzzle.activePair}
-          inputs={puzzle.inputs}
+          pairInputs={puzzle.pairInputs}
+          pairsDone={puzzle.pairsDone}
           finished={puzzle.finished}
           running={timer.running}
           onInputChange={puzzle.handleInput}

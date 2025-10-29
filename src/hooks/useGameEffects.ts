@@ -6,7 +6,7 @@ interface UsePuzzleForEffects {
   finished: boolean;
   canCheck: boolean;
   check: () => void;
-  focusActiveInput: () => void;
+  focusFirstInput: () => void;
 }
 
 interface UseGameEffectsProps {
@@ -45,7 +45,7 @@ export function useGameEffects({ timer, audio, puzzle }: UseGameEffectsProps) {
   useEffect(() => {
     if (timer.running && !puzzle.finished) {
       setTimeout(() => {
-        puzzle.focusActiveInput();
+        puzzle.focusFirstInput();
       }, 50);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

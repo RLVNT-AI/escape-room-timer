@@ -3,18 +3,18 @@ import PuzzleCard from './PuzzleCard';
 import { TARGET_PAIRS } from '../constants';
 
 interface PuzzleGridProps {
-  activePair: number;
-  inputs: [string, string];
+  pairInputs: Array<[string, string]>;
+  pairsDone: boolean[];
   finished: boolean;
   running: boolean;
-  onInputChange: (idx: number, val: string) => void;
+  onInputChange: (pairIdx: number, inputIdx: number, val: string) => void;
   input0Ref: RefObject<HTMLInputElement | null>;
   input1Ref: RefObject<HTMLInputElement | null>;
 }
 
 export default function PuzzleGrid({ 
-  activePair, 
-  inputs, 
+  pairInputs,
+  pairsDone,
   finished, 
   running,
   onInputChange,
@@ -23,21 +23,23 @@ export default function PuzzleGrid({
 }: PuzzleGridProps) {
   return (
     <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {TARGET_PAIRS.map((pair, idx) => {
-        const isDone = finished ? idx <= activePair : idx < activePair;
-        const isActive = idx === activePair && !finished && running;
+      {TARGET_PAIRS.map((_, idx) => {
+        // ═══════════════════════════════════════════════════════════
+        // Only Pair 0 gets external refs for reset focus
+        // ═══════════════════════════════════════════════════════════
+        const isFirstPair = idx === 0;
         
         return (
           <PuzzleCard
             key={idx}
-            pair={pair}
             index={idx}
-            isDone={isDone}
-            isActive={isActive}
-            inputs={inputs}
-            onInputChange={onInputChange}
-            input0Ref={isActive ? input0Ref : null}
-            input1Ref={isActive ? input1Ref : null}
+            inputs={pairInputs[idx]}
+            isDone={pairsDone[idx]}
+            finished={finished}
+            running={running}
+            onInputChange={(inputIdx, val) => onInputChange(idx, inputIdx, val)}
+            externalInput0Ref={isFirstPair ? input0Ref : null}
+            externalInput1Ref={isFirstPair ? input1Ref : null}
           />
         );
       })}

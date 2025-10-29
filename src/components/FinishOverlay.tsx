@@ -1,4 +1,5 @@
 import { formatHMS } from '../utils/formatters';
+import { TARGET_PAIRS } from '../constants';
 
 interface FinishOverlayProps {
   timeLeft: number;
@@ -9,7 +10,7 @@ export default function FinishOverlay({ timeLeft, onPlayAgain }: FinishOverlayPr
   return (
     <>
       {/* Backdrop - dunkler Hintergrund */}
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40" />
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
       
       {/* Overlay Content */}
       <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
@@ -17,17 +18,30 @@ export default function FinishOverlay({ timeLeft, onPlayAgain }: FinishOverlayPr
           {/* Emoji */}
           <div className="text-6xl mb-4">🎉</div>
           
-          {/* Titel */}
+          {/* Title */}
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Geschafft!
           </h2>
           
-          {/* Untertitel */}
+          {/* Subtitle */}
           <p className="text-white/90 mb-6">
             Alle Rätsel gelöst!
           </p>
+
+        {/* ═══════════════════════════════════════════════════════ */}
+        {/* SOLVED PAIRS: Show the target solution */}
+        {/* ═══════════════════════════════════════════════════════ */}
+        <div className="mb-6 flex gap-3 justify-center flex-wrap">
+          {TARGET_PAIRS.map(([a, b], i) => (
+            <div key={i} className="flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-3 py-2">
+              <span className="text-emerald-400 font-mono text-xl font-semibold">{a}</span>
+              <span className="text-emerald-400/50">•</span>
+              <span className="text-emerald-400 font-mono text-xl font-semibold">{b}</span>
+            </div>
+          ))}
+        </div>
           
-          {/* Zeit */}
+          {/* Remaining Time */}
           <div className="bg-white/20 rounded-lg p-4 mb-6">
             <div className="text-sm text-white/80 mb-1">Verbleibende Zeit</div>
             <div className="text-3xl font-mono font-bold text-white">
@@ -35,12 +49,12 @@ export default function FinishOverlay({ timeLeft, onPlayAgain }: FinishOverlayPr
             </div>
           </div>
           
-          {/* Nochmal Button */}
+          {/* Play Again */}
           <button
             onClick={onPlayAgain}
             className="w-full bg-white text-green-600 font-bold py-4 px-6 rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105 active:scale-95 shadow-lg"
           >
-            Play again
+            Nochmal spielen
           </button>
         </div>
       </div>
