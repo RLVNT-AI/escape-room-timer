@@ -60,10 +60,10 @@ export default function EscapeRoomTimer() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-              Escape Room Timer
+              Lockdown Timer
             </h1>
             <p className="text-gray-400 text-sm md:text-base mt-1">
-              Löst alle Buchstabenpaare bevor die Zeit abläuft!
+              Bitte Code eingeben:
             </p>
           </div>
           
