@@ -66,4 +66,15 @@ export function useGameEffects({ timer, audio, puzzle }: UseGameEffectsProps) {
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [puzzle, timer]);
+
+  // RELOAD WARNING
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (timer.hasStarted && !puzzle.finished) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [timer.hasStarted, puzzle.finished]);
 }

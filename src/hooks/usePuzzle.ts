@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, RefObject } from 'react';
-import { TARGET_PAIRS, FLASH_DURATION, TIME_PENALTY, WIN_SOUND_DELAY } from '../constants';
+import { FLASH_DURATION, TIME_PENALTY, WIN_SOUND_DELAY } from '../defaults';
 import { UseAudioReturn } from './useAudio';
 
 type FlashState = "" | "success" | "error";
@@ -21,14 +21,15 @@ interface UsePuzzleReturn {
 
 export function usePuzzle(
   audioRefs: UseAudioReturn,
-  setTimeLeft: (value: number | ((prev: number) => number)) => void
+  setTimeLeft: (value: number | ((prev: number) => number)) => void,
+  targetPairs: Array<[string, string]>  
 ): UsePuzzleReturn {
 
   const [pairInputs, setPairInputs] = useState<Array<[string, string]>>(
-    Array(TARGET_PAIRS.length).fill(null).map(() => ['', ''])
+    Array(targetPairs.length).fill(null).map(() => ['', ''])
   );
   const [pairsDone, setPairsDone] = useState<boolean[]>(
-    Array(TARGET_PAIRS.length).fill(false)
+    Array(targetPairs.length).fill(false)
   );
   const [flash, setFlash] = useState<FlashState>("");
   const [penalty, setPenalty] = useState<boolean>(false);
@@ -91,7 +92,7 @@ export function usePuzzle(
     let hasError = false;
     const newDone = [...pairsDone];
     
-    TARGET_PAIRS.forEach((targetPair, idx) => {
+    targetPairs.forEach((targetPair, idx) => {
       const [userA, userB] = pairInputs[idx].map(x => x.trim().toUpperCase());
       const [targetA, targetB] = targetPair;
       
@@ -110,8 +111,8 @@ export function usePuzzle(
       setPenalty(true);
       audioRefs.playSound(audioRefs.errRef);
       setTimeLeft((t) => Math.max(0, t - TIME_PENALTY));
-      setPairInputs(Array(TARGET_PAIRS.length).fill(null).map(() => ['', '']));
-      setPairsDone(Array(TARGET_PAIRS.length).fill(false));
+      setPairInputs(Array(targetPairs.length).fill(null).map(() => ['', '']));
+      setPairsDone(Array(targetPairs.length).fill(false));
       focusFirstInput();
     } else if (newDone.every(x => x)) {
       setPairsDone(newDone);
@@ -132,8 +133,8 @@ export function usePuzzle(
   // ═══════════════════════════════════════════════════════════
   const reset = (): void => {
     setFinished(false);
-    setPairInputs(Array(TARGET_PAIRS.length).fill(null).map(() => ['', '']));
-    setPairsDone(Array(TARGET_PAIRS.length).fill(false));
+    setPairInputs(Array(targetPairs.length).fill(null).map(() => ['', '']));
+    setPairsDone(Array(targetPairs.length).fill(false));
     setFlash("");
     setPenalty(false);
   };

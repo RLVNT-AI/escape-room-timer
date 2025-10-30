@@ -1,5 +1,5 @@
 import { formatHMS } from '../utils/formatters';
-import { TIME_PENALTY } from '../constants';
+import { TIME_PENALTY } from '../defaults';
 
 interface TimerDisplayProps {
   timeLeft: number;

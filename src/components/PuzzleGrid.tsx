@@ -1,6 +1,5 @@
 import { RefObject } from 'react';
 import PuzzleCard from './PuzzleCard';
-import { TARGET_PAIRS } from '../constants';
 
 interface PuzzleGridProps {
   pairInputs: Array<[string, string]>;
@@ -23,7 +22,7 @@ export default function PuzzleGrid({
 }: PuzzleGridProps) {
   return (
     <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {TARGET_PAIRS.map((_, idx) => {
+      {pairInputs.map((pairInput, idx) => {
         // ═══════════════════════════════════════════════════════════
         // Only Pair 0 gets external refs for reset focus
         // ═══════════════════════════════════════════════════════════
@@ -33,7 +32,7 @@ export default function PuzzleGrid({
           <PuzzleCard
             key={idx}
             index={idx}
-            inputs={pairInputs[idx]}
+            inputs={pairInput}
             isDone={pairsDone[idx]}
             finished={finished}
             running={running}

@@ -2,24 +2,35 @@ import { useTimer } from './hooks/useTimer';
 import { useAudio } from './hooks/useAudio';
 import { usePuzzle } from './hooks/usePuzzle';
 import { useGameEffects } from './hooks/useGameEffects';
+import { useSettings } from './hooks/useSettings';
 import TimerDisplay from './components/TimerDisplay';
 import PuzzleGrid from './components/PuzzleGrid';
 import ControlButtons from './components/ControlButtons';
 import FinishOverlay from './components/FinishOverlay';
-import { SECS_2H30 } from './constants';
+import SettingsPanel from './components/SettingsPanel';
+import PasswordModal from './components/PasswordModal';
 
 export default function EscapeRoomTimer() {
-  const timer = useTimer(SECS_2H30);
+  const settings = useSettings();
+  const timer = useTimer(settings.timeSecs);
   const audio = useAudio();
-  const puzzle = usePuzzle(audio, timer.setTimeLeft);
+  const puzzle = usePuzzle(audio, timer.setTimeLeft, settings.targetPairs);
 
   useGameEffects({ timer, audio, puzzle });
+
+  // HANDLERS
+  const handleSettingsSave = (newTimeSecs: number) => {
+    settings.saveSettings(newTimeSecs);
+    timer.reset(newTimeSecs);
+    puzzle.reset();
+  };
 
   const handleReset = () => {
     timer.reset();
     puzzle.reset();
   };
 
+  // FLASH BACKDROP
   const backdrop =
     puzzle.flash === "success"
       ? "after:content-[''] after:fixed after:inset-0 after:bg-green-500/30 after:pointer-events-none after:z-30"
@@ -37,13 +48,22 @@ export default function EscapeRoomTimer() {
         <audio ref={audio.errRef} src="audio/error.wav" />
         <audio ref={audio.winRef} src="audio/win.mp3" />
 
+        <button
+          onClick={settings.requestOpen}
+          className="fixed top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/10 border border-white/10 rounded-lg 
+          flex items-center justify-center text-white/100 hover:text-white/100 transition-all z-20"
+          aria-label="Settings"
+        >
+          ⚙️
+        </button>
+
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
               Escape Room Timer
             </h1>
             <p className="text-gray-400 text-sm md:text-base mt-1">
-              Löse alle Buchstabenpaare bevor die Zeit abläuft!
+              Löst alle Buchstabenpaare bevor die Zeit abläuft!
             </p>
           </div>
           
@@ -90,12 +110,28 @@ export default function EscapeRoomTimer() {
         {puzzle.finished && (
           <FinishOverlay 
             timeLeft={timer.timeLeft}
+            targetPairs={settings.targetPairs}
             onPlayAgain={handleReset} 
           />
         )}
 
+        {settings.showPasswordModal && (
+          <PasswordModal
+            onSubmit={settings.submitPassword}
+            onCancel={settings.cancelPassword}
+          />
+        )}
+
+        {settings.showPanel && (
+          <SettingsPanel
+            currentTimeSecs={settings.timeSecs}
+            currentPairs={settings.targetPairs}
+            onSave={handleSettingsSave}
+            onClose={settings.closePanel}
+          />
+        )}
+
         <div className="mt-10 text-center text-xs text-white/40 space-y-1">
-          <p>Musik & SFX-Dateien bitte in /public/audio ablegen: escape-room-music.mp3, correct.mp3, error.mp3, win.mp3</p>
           <p>
             Tastatur: <kbd className="px-2 py-1 bg-white/10 rounded">Enter</kbd> = Check | {" "}
             <kbd className="px-2 py-1 bg-white/10 rounded">Leertaste</kbd> = Start/Pause

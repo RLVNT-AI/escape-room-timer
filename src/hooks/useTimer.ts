@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { DEFAULT_TIME_SECS } from '../defaults';
 
 export interface UseTimerReturn {
   timeLeft: number;
@@ -6,10 +7,10 @@ export interface UseTimerReturn {
   hasStarted: boolean;
   setRunning: (value: boolean | ((prev: boolean) => boolean)) => void;
   setTimeLeft: (value: number | ((prev: number) => number)) => void;
-  reset: () => void;
+  reset: (value?: number) => void;
 }
 
-export function useTimer(initialTime: number): UseTimerReturn {
+export function useTimer(initialTime: number = DEFAULT_TIME_SECS): UseTimerReturn {
   const [timeLeft, setTimeLeft] = useState<number>(initialTime);
   const [running, setRunning] = useState<boolean>(false);
   const [hasStarted, setHasStarted] = useState<boolean>(false);
@@ -45,8 +46,8 @@ export function useTimer(initialTime: number): UseTimerReturn {
     }
   }, [timeLeft]);
 
-  const reset = (): void => {
-    setTimeLeft(initialTime);
+  const reset = (customTime?: number): void => {
+    setTimeLeft(customTime ?? initialTime);
     setRunning(false);
     setHasStarted(false);
   };

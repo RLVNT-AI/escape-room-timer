@@ -1,12 +1,12 @@
 import { formatHMS } from '../utils/formatters';
-import { TARGET_PAIRS } from '../constants';
 
 interface FinishOverlayProps {
   timeLeft: number;
+  targetPairs: Array<[string, string]>;
   onPlayAgain: () => void;
 }
 
-export default function FinishOverlay({ timeLeft, onPlayAgain }: FinishOverlayProps) {
+export default function FinishOverlay({ timeLeft, targetPairs, onPlayAgain }: FinishOverlayProps) {
   return (
     <>
       {/* Backdrop - dunkler Hintergrund */}
@@ -32,11 +32,11 @@ export default function FinishOverlay({ timeLeft, onPlayAgain }: FinishOverlayPr
         {/* SOLVED PAIRS: Show the target solution */}
         {/* ═══════════════════════════════════════════════════════ */}
         <div className="mb-6 flex gap-3 justify-center flex-wrap">
-          {TARGET_PAIRS.map(([a, b], i) => (
+          {targetPairs.map(([a, b], i) => (
             <div key={i} className="flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-3 py-2">
-              <span className="text-emerald-400 font-mono text-xl font-semibold">{a}</span>
-              <span className="text-emerald-400/50">•</span>
-              <span className="text-emerald-400 font-mono text-xl font-semibold">{b}</span>
+              <span className="text-emerald-100 font-mono text-xl font-semibold">{a}</span>
+              <span className="text-emerald-20/50">•</span>
+              <span className="text-emerald-100 font-mono text-xl font-semibold">{b}</span>
             </div>
           ))}
         </div>
