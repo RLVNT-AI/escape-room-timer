@@ -54,7 +54,9 @@ export default function EscapeRoomTimer() {
           flex items-center justify-center text-white/100 hover:text-white/100 transition-all z-20"
           aria-label="Settings"
         >
-          ⚙️
+          <span className="material-icons">
+            settings
+          </span>
         </button>
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
