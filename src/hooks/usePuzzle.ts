@@ -142,8 +142,9 @@ export function usePuzzle(
   // ═══════════════════════════════════════════════════════════
   // CAN CHECK: Enter at least one letter
   // ═══════════════════════════════════════════════════════════
-  const canCheck = !finished && pairInputs.some(pair => 
-    pair[0].length > 0 || pair[1].length > 0
+  const canCheck = !finished && pairInputs.every(pair => 
+    (pair[0].length > 0 && pair[1].length > 0) || 
+    (pair[0].length === 0 && pair[1].length === 0)
   );
 
   return {
