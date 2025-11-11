@@ -4,9 +4,10 @@ interface FinishOverlayProps {
   timeLeft: number;
   targetPairs: Array<[string, string]>;
   onPlayAgain: () => void;
+  onContinue: () => void;
 }
 
-export default function FinishOverlay({ timeLeft, targetPairs, onPlayAgain }: FinishOverlayProps) {
+export default function FinishOverlay({ timeLeft, targetPairs, onPlayAgain, onContinue }: FinishOverlayProps) {
   return (
     <>
       {/* Backdrop - dunkler Hintergrund */}
@@ -49,13 +50,21 @@ export default function FinishOverlay({ timeLeft, targetPairs, onPlayAgain }: Fi
             </div>
           </div>
           
-          {/* Play Again */}
-          <button
-            onClick={onPlayAgain}
-            className="w-full bg-white text-green-600 font-bold py-4 px-6 rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105 active:scale-95 shadow-lg"
-          >
-            Nochmal spielen
-          </button>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={onContinue}
+              className="w-full bg-white/20 text-white font-bold py-3 px-6 rounded-lg hover:bg-white/30 transition-all"
+            >
+              Weiterspielen
+            </button>
+            
+            <button
+              onClick={onPlayAgain}
+              className="w-full bg-white text-green-600 font-bold py-4 px-6 rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105 active:scale-95 shadow-lg"
+            >
+              Nochmal spielen
+            </button>
+          </div>
         </div>
       </div>
     </>

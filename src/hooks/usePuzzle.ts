@@ -17,6 +17,8 @@ interface UsePuzzleReturn {
   check: () => void;
   canCheck: boolean;
   reset: () => void;
+  clearInputs: () => void;
+  continueGame: () => void;
 }
 
 export function usePuzzle(
@@ -82,15 +84,45 @@ export function usePuzzle(
     }, 100);
   }, [finished]);
 
-
   // ═══════════════════════════════════════════════════════════
-  // CHECK: Check all 4 pairs at once
+  // CHECK: Only win or lose when all are correct, no inbetween
+  // ═══════════════════════════════════════════════════════════
+  const check = (): void => {
+    if (finished) return;
+
+    // Prüfe, ob jede Eingabe mit der Lösung übereinstimmt
+    const isWin = targetPairs.every((targetPair, idx) => {
+      const [userA, userB] = pairInputs[idx].map(x => x.trim().toUpperCase());
+      const [targetA, targetB] = targetPair;
+      return userA === targetA && userB === targetB;
+    });
+
+    // Fall 1: Alles richtig -> GEWONNEN
+    if (isWin) {
+      setPairsDone(Array(targetPairs.length).fill(true)); 
+      setFlash("success");
+      setFinished(true);
+      audioRefs.playSound(audioRefs.okRef);
+      setTimeout(() => audioRefs.playSound(audioRefs.winRef), WIN_SOUND_DELAY);
+    
+    // Fall 2: Nicht alles richtig -> FEHLER
+    } else {
+      setFlash("error");
+      setPenalty(true);
+      audioRefs.playSound(audioRefs.errRef);
+      setTimeLeft((t) => Math.max(0, t - TIME_PENALTY));
+      setPairInputs(Array(targetPairs.length).fill(null).map(() => ['', '']));
+      setPairsDone(Array(targetPairs.length).fill(false));
+      focusFirstInput();
+    }
+  };
+
+ /*
+  // ═══════════════════════════════════════════════════════════
+  // OLD CHECK: Partial correctness is allowed
   // ═══════════════════════════════════════════════════════════
  const check = (): void => {
     if (finished) return;
-
-    let hasError = false;
-    const newDone = [...pairsDone];
     
     targetPairs.forEach((targetPair, idx) => {
       const [userA, userB] = pairInputs[idx].map(x => x.trim().toUpperCase());
@@ -127,6 +159,23 @@ export function usePuzzle(
       }
     }
   };
+  */
+
+  // ═══════════════════════════════════════════════════════════
+  // NEU: CLEAR INPUTS - Leert alle Eingabefelder
+  // ═══════════════════════════════════════════════════════════
+  const clearInputs = (): void => {
+    if (finished) return;
+    setPairInputs(Array(targetPairs.length).fill(null).map(() => ['', '']));
+    focusFirstInput();
+  };
+
+  const continueGame = (): void => {
+    setFinished(false);
+    setPairsDone(Array(targetPairs.length).fill(false));
+    setPairInputs(Array(targetPairs.length).fill(null).map(() => ['', '']));
+    focusFirstInput();
+  };
 
   // ═══════════════════════════════════════════════════════════
   // RESET: Reset entire game (except for timer)
@@ -143,8 +192,7 @@ export function usePuzzle(
   // CAN CHECK: Enter at least one letter
   // ═══════════════════════════════════════════════════════════
   const canCheck = !finished && pairInputs.every(pair => 
-    (pair[0].length > 0 && pair[1].length > 0) || 
-    (pair[0].length === 0 && pair[1].length === 0)
+    (pair[0].length > 0 && pair[1].length > 0)
   );
 
   return {
@@ -159,6 +207,8 @@ export function usePuzzle(
     focusFirstInput,
     check,
     canCheck,
-    reset
+    reset,
+    clearInputs,
+    continueGame
   };
 }

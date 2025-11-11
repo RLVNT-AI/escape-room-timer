@@ -30,6 +30,11 @@ export default function EscapeRoomTimer() {
     puzzle.reset();
   };
 
+  const handleContinue = () => {
+    puzzle.continueGame();
+    timer.setRunning(true);
+  }
+
   // FLASH BACKDROP
   const backdrop =
     puzzle.flash === "success"
@@ -106,14 +111,15 @@ export default function EscapeRoomTimer() {
           canCheck={puzzle.canCheck}
           onToggleRunning={() => timer.setRunning((r) => !r)}
           onCheck={puzzle.check}
-          onReset={handleReset}
+          onClear={puzzle.clearInputs}
         />
 
         {puzzle.finished && (
           <FinishOverlay 
             timeLeft={timer.timeLeft}
             targetPairs={settings.targetPairs}
-            onPlayAgain={handleReset} 
+            onPlayAgain={handleReset}
+            onContinue={handleContinue}
           />
         )}
 
@@ -130,6 +136,10 @@ export default function EscapeRoomTimer() {
             currentPairs={settings.targetPairs}
             onSave={handleSettingsSave}
             onClose={settings.closePanel}
+            onReset={handleReset}
+            onToggleRunning={() => timer.setRunning((r) => !r!)}
+            running={timer.running}
+            hasStarted={timer.hasStarted}
           />
         )}
 

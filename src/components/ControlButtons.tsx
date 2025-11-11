@@ -5,7 +5,7 @@ interface ControlButtonsProps {
   canCheck: boolean;
   onToggleRunning: () => void;
   onCheck: () => void;
-  onReset: () => void;
+  onClear: () => void;
 }
 
 export default function ControlButtons({ 
@@ -15,29 +15,28 @@ export default function ControlButtons({
   canCheck, 
   onToggleRunning, 
   onCheck, 
-  onReset 
+  onClear
 }: ControlButtonsProps) {
-
-  const getStartPauseText = (): string => {
-      if (!hasStarted) return "Start";
-      return running ? "Pause" : "Fortsetzen";
-    };
-
 
   return (
     <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center">
       <button
-        onClick={onToggleRunning}
+        onClick={() => {
+          if (!hasStarted) {
+            onToggleRunning();
+          }
+        }}
         className="appearance-none w-36 px-6 py-2.5 rounded-lg font-semibold 
-                  text-neutral-100
-                  bg-gradient-to-b from-neutral-700 to-neutral-800 
-                  border border-neutral-900 border-t-neutral-600 
-                  hover:from-neutral-600 hover:to-neutral-700
-                  active:scale-[0.98] transition-all duration-200 
-                  shadow-lg shadow-black/40"
-        disabled={finished}
+                   text-neutral-100
+                   bg-gradient-to-b from-neutral-700 to-neutral-800 
+                   border border-neutral-900 border-t-neutral-600 
+                   hover:from-neutral-600 hover:to-neutral-700
+                   active:scale-[0.98] transition-all duration-200 
+                   shadow-lg shadow-black/40
+                   disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={hasStarted || finished}
       >
-        {getStartPauseText()}
+        Start
       </button>
       <button
         onClick={onCheck}
@@ -52,16 +51,18 @@ export default function ControlButtons({
         Prüfen
       </button>
       <button
-        onClick={onReset}
+        onClick={onClear}
         className="appearance-none w-36 px-5 py-2.5 rounded-lg font-semibold 
                   text-neutral-400 
                   bg-neutral-800 
                   border border-neutral-900 border-t-neutral-700
                   hover:bg-neutral-700 hover:text-neutral-200
                   active:scale-[0.98] transition-all duration-200 
-                  shadow-lg shadow-black/40"
+                  shadow-lg shadow-black/40
+                  disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={!running || finished}
       >
-        Zurücksetzen
+        Leeren
       </button>
     </div>
   );

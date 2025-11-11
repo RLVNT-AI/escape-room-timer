@@ -5,11 +5,20 @@ interface SettingsPanelProps {
   currentPairs: Array<[string, string]>;
   onSave: (newTimeSecs: number) => void;
   onClose: () => void;
+  onReset: () => void;
+  onToggleRunning: () => void;
+  running: boolean;
+  hasStarted: boolean;
 }
 
 export default function SettingsPanel({ currentTimeSecs, 
-  //currentPairs, 
-  onSave, onClose }: SettingsPanelProps) {
+  onSave, 
+  onClose, 
+  onReset, 
+  onToggleRunning, 
+  running, 
+  hasStarted 
+}: SettingsPanelProps) {
   const [hours, setHours] = useState(Math.floor(currentTimeSecs / 3600));
   const [minutes, setMinutes] = useState(Math.floor((currentTimeSecs % 3600) / 60));
   // const [showPairs, setShowPairs] = useState(false);
@@ -26,6 +35,11 @@ export default function SettingsPanel({ currentTimeSecs,
     onClose();
   };
 
+  const getStartPauseText = (): string => {
+    if (!hasStarted) return "Start";
+    return running ? "Spiel pausieren" : "Spiel fortsetzen";
+  };
+
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-white/20 rounded-2xl p-6 max-w-lg w-full shadow-2xl">
@@ -38,6 +52,36 @@ export default function SettingsPanel({ currentTimeSecs,
           >
             ✕
           </button>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════ */}
+        {/* GAME-ACTIONS */}
+        {/* ═══════════════════════════════════════════════════════ */}
+        <div className="mb-8">
+          <label className="block text-white text-sm font-semibold mb-3 uppercase tracking-wider">
+            Spiel-Aktionen
+          </label>
+          <div className="flex flex-col gap-3">
+            {/* Pause/Fortsetzen-Button */}
+            <button
+              onClick={onToggleRunning}
+              className="w-full px-4 py-3 bg-yellow-600/80 hover:bg-yellow-700/80 rounded-lg text-white font-medium transition-colors"
+            >
+              {getStartPauseText()}
+            </button>
+            {/* Reset-Button */}
+            <button
+              onClick={() => {
+                if (window.confirm('Bist du sicher, dass du das gesamte Spiel zurücksetzen möchtest?')) {
+                  onReset();
+                  onClose();
+                }
+              }}
+              className="w-full px-4 py-3 bg-red-800 hover:bg-red-700 rounded-lg text-white font-medium transition-colors"
+            >
+              Spiel zurücksetzen
+            </button>
+          </div>
         </div>
 
         {/* ═══════════════════════════════════════════════════════ */}
