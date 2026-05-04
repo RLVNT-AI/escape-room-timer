@@ -20,8 +20,16 @@ export default function PuzzleGrid({
   input0Ref,
   input1Ref 
 }: PuzzleGridProps) {
+
+  const colsMap: Record<number, string> = {
+  1: 'sm:grid-cols-1',
+  2: 'sm:grid-cols-2',
+  3: 'sm:grid-cols-3',
+  4: 'sm:grid-cols-4',
+};
+
   return (
-    <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className={`mt-10 grid grid-cols-1 gap-6 ${colsMap[pairInputs.length] ?? 'sm:grid-cols-4'}`}>
       {pairInputs.map((pairInput, idx) => {
         // ═══════════════════════════════════════════════════════════
         // Only Pair 0 gets external refs for reset focus
